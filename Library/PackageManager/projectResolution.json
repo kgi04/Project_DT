@@ -8,6 +8,14 @@
     "C:\\UnityWorkspace\\ProjectDT\\Packages\\packages-lock.json"
   ],
   "outputs": {
+    "com.unity.2d.sprite@1.0.0": {
+      "name": "com.unity.2d.sprite",
+      "resolvedPath": "C:\\UnityWorkspace\\ProjectDT\\Library\\PackageCache\\com.unity.2d.sprite",
+      "fingerprint": "6e37a90069af6bceba270d5e592cd6f3521c7a27",
+      "editorCompatibility": "2019.2.0a1",
+      "version": "1.0.0",
+      "source": "builtin"
+    },
     "com.unity.collab-proxy@2.6.0": {
       "name": "com.unity.collab-proxy",
       "resolvedPath": "C:\\UnityWorkspace\\ProjectDT\\Library\\PackageCache\\com.unity.collab-proxy",
@@ -354,14 +362,6 @@
       "editorCompatibility": "2023.1.0a1",
       "version": "9.0.3",
       "source": "registry"
-    },
-    "com.unity.2d.sprite@1.0.0": {
-      "name": "com.unity.2d.sprite",
-      "resolvedPath": "C:\\UnityWorkspace\\ProjectDT\\Library\\PackageCache\\com.unity.2d.sprite",
-      "fingerprint": "6e37a90069af6bceba270d5e592cd6f3521c7a27",
-      "editorCompatibility": "2019.2.0a1",
-      "version": "1.0.0",
-      "source": "builtin"
     },
     "com.unity.2d.spriteshape@10.0.7": {
       "name": "com.unity.2d.spriteshape",
