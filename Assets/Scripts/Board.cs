@@ -32,6 +32,8 @@ public class Board : MonoBehaviour
 
     private void Update()
     {
+        CompleteRow();
+
         if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.Return))
         {
             DeleteBlock(activeBlock);
@@ -79,12 +81,11 @@ public class Board : MonoBehaviour
             Vector3Int newPos = activeBlock.cells[i] + activeBlock.pos + Vector3Int.down;
             if (newPos.y < groundYpos || InactiveTilemap.GetTile(newPos) != null)
             {
+                DeleteBlock(activeBlock);
                 RenderInactive(activeBlock);
                 SpawnBlock();
             }
         }
-
-        CompleteRow();
     }
 
     // 랜덤한 블럭을 생성
