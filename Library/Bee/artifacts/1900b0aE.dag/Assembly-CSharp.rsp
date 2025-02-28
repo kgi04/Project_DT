@@ -445,7 +445,7 @@
 "Assets/Scripts/Board.cs"
 "Assets/Scripts/GameManager.cs"
 "Assets/Scripts/MainMenu.cs"
-"Assets/Scripts/TetrisBlock.cs"
+"Assets/Scripts/TetrominoData.cs"
 -langversion:9.0
 /deterministic
 /optimize+
