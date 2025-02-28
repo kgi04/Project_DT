@@ -1,10 +1,12 @@
 using System;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using static Unity.Collections.AllocatorManager;
 
 public class Board : MonoBehaviour
 {
-    public Tilemap tilemap;
+    public Tilemap InactiveTilemap;
+    public Tilemap ActiveTilemap;
     public TetrominoData[] tetrominoes;
     public Vector3Int spawnPos;
     public Block activeBlock { get; private set; }
@@ -13,6 +15,8 @@ public class Board : MonoBehaviour
     float nextTime = 0.0f;
 
     int groundYpos = -10;
+    int leftEnd = -5;
+    int rightEnd = 4;
 
     private void Awake()
     {
@@ -30,25 +34,57 @@ public class Board : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.Return))
         {
-            activeBlock.Fall();
-
+            DeleteBlock(activeBlock);
+            if (CanMove(activeBlock, Vector3Int.down))
+            {
+                activeBlock.Fall();
+            }
             Render(activeBlock);
         }
 
-        if (activeBlock.pos.y < groundYpos)
+        if (Input.GetKey(KeyCode.RightArrow))
         {
-            activeBlock.Deactivate();
+            DeleteBlock(activeBlock);
+            if (CanMove(activeBlock, Vector3Int.right))
+            {
+                activeBlock.GoRight();
+            }
+            Render(activeBlock);
+        }
 
-            SpawnBlock();
+        if (Input.GetKey(KeyCode.LeftArrow))
+        {
+            DeleteBlock(activeBlock);
+            if (CanMove(activeBlock, Vector3Int.left))
+            {
+                activeBlock.GoLeft();
+            }
+            Render(activeBlock);
         }
 
         if (Time.time > nextTime)
         {
             nextTime = Time.time + pointTime;
 
-            activeBlock.Fall();
+            DeleteBlock(activeBlock);
+            if (CanMove(activeBlock, Vector3Int.down))
+            {
+                activeBlock.Fall();
+            }
             Render(activeBlock);
         }
+
+        for (int i = 0; i < activeBlock.cells.Length; ++i)
+        {
+            Vector3Int newPos = activeBlock.cells[i] + activeBlock.pos + Vector3Int.down;
+            if (newPos.y < groundYpos || InactiveTilemap.GetTile(newPos) != null)
+            {
+                RenderInactive(activeBlock);
+                SpawnBlock();
+            }
+        }
+
+        CompleteRow();
     }
 
     // 랜덤한 블럭을 생성
@@ -61,15 +97,109 @@ public class Board : MonoBehaviour
         Render(activeBlock);
     }
 
-    // 블럭을 board에 렌더링
+    // 블럭을 board에 렌더링 (in inactivetilemap)
     public void Render(Block _block)
     {
-        tilemap.ClearAllTiles();
-
         for (int i = 0; i < _block.cells.Length; ++i)
         {
             Vector3Int tilePos = _block.cells[i] + _block.pos;
-            tilemap.SetTile(tilePos, _block.data.tile);
+            ActiveTilemap.SetTile(tilePos, _block.data.tile);
+        }
+    }
+
+    public void RenderInactive(Block _block)
+    {
+        for (int i = 0; i < _block.cells.Length; ++i)
+        {
+            Vector3Int tilePos = _block.cells[i] + _block.pos;
+            InactiveTilemap.SetTile(tilePos, _block.data.tile);
+        }
+    }
+
+    // delete tiles in blockpos
+    public void DeleteBlock(Block _block)
+    {
+        for (int i = 0; i < _block.cells.Length; ++i)
+        {
+            Vector3Int tilePos = _block.cells[i] + _block.pos;
+            ActiveTilemap.SetTile(tilePos, null);
+        }
+    }
+
+    // check if block can move to some direction
+    private bool CanMove(Block block, Vector3Int direction)
+    {
+        for (int i = 0; i < block.cells.Length; ++i)
+        {
+            Vector3Int newPos = block.cells[i] + block.pos + direction;
+
+            // Out of board bounds?
+            if (newPos.x < leftEnd || newPos.x > rightEnd || newPos.y < groundYpos)
+            {
+                return false;
+            }
+
+            // Collision with another tile?
+            if (InactiveTilemap.GetTile(newPos) != null)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // check if some rows are full, and then clear the row && drop the rows above that row
+    public void CompleteRow()
+    {
+        for (int y = groundYpos; y <= spawnPos.y + 1; ++y)
+        {
+            if (IsRowFull(y))
+            {
+                ClearRow(y);
+                DropRowAbove(y);
+                y--;
+            }
+        }
+    }
+
+    private bool IsRowFull(int _y)
+    {
+        for (int x = leftEnd; x <= rightEnd; ++x)
+        {
+            Vector3Int pos = new Vector3Int(x, _y, 0);
+            if (InactiveTilemap.GetTile(pos) == null)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void ClearRow(int _y)
+    {
+        for (int x = leftEnd; x <= rightEnd; ++x)
+        {
+            Vector3Int pos = new Vector3Int(x, _y, 0);
+            InactiveTilemap.SetTile(pos, null);
+        }
+    }
+
+    private void DropRowAbove(int _y)
+    {
+        for (int y = _y + 1; y <= spawnPos.y + 1; ++y)
+        {
+            for (int x = leftEnd; x <= rightEnd; ++x)
+            {
+                Vector3Int pos = new Vector3Int(x, y, 0);
+
+                if (InactiveTilemap.GetTile(pos) != null)
+                {
+                    Vector3Int newPos = new Vector3Int(x, y - 1, 0);
+
+                    InactiveTilemap.SetTile(newPos, InactiveTilemap.GetTile(pos));
+                    InactiveTilemap.SetTile(pos, null);
+                }
+            }
         }
     }
 }

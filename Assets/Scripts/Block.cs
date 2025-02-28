@@ -6,7 +6,6 @@ public class Block : MonoBehaviour
     public TetrominoData data { get; private set; }
     public Vector3Int[] cells { get; private set; }
     public Vector3Int pos { get; private set; }
-    bool IsActiveBlock = true;
 
     // tetromino 구조 데이터와 블럭의 위치을 초기값으로 받음
     public void Initialize(TetrominoData _data, Vector3Int _pos)
@@ -31,6 +30,12 @@ public class Block : MonoBehaviour
         pos += Vector3Int.down;
     }
 
+    // makes block rise
+    public void Rise()
+    {
+        pos += Vector3Int.up;
+    }
+
     // makes block go right
     public void GoRight()
     {
@@ -41,11 +46,5 @@ public class Block : MonoBehaviour
     public void GoLeft()
     {
         pos += Vector3Int.left;
-    }
-
-    // makes block deactivate
-    public void Deactivate()
-    {
-        IsActiveBlock = false;
     }
 }
