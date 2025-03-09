@@ -47,4 +47,22 @@ public class Block : MonoBehaviour
     {
         pos += Vector3Int.left;
     }
+
+    public void Rotate()
+    {
+        for (int i = 0; i < cells.Length; ++i)
+        {
+            Vector3Int cell = cells[i];
+            cells[i] = new Vector3Int(-cell.y, cell.x, 0);
+        }
+    }
+
+    public void RotateBack()
+    {
+        for (int i = 0; i < cells.Length; ++i)
+        {
+            Vector3Int cell = cells[i];
+            cells[i] = new Vector3Int(cell.y, -cell.x, 0);
+        }
+    }
 }
