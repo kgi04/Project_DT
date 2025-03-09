@@ -14,6 +14,7 @@ public enum Tetromino
     L,
     S,
     Z,
+    nullTetromino,
 }
 
 // tetris에 사용될 블럭의 데이터

@@ -10,6 +10,8 @@ public class Board : MonoBehaviour
     public TetrominoData[] tetrominoes;
     public Vector3Int spawnPos;
     public Block activeBlock { get; private set; }
+    TetrominoData HoldingBlock;
+    TetrominoData temphold;
 
     float pointTime = 1.0f;
     float nextTime = 0.0f;
@@ -20,11 +22,19 @@ public class Board : MonoBehaviour
     int leftEnd = -5;
     int rightEnd = 4;
 
+    private bool isTouchingGround = false;
+    private float lockDelay = 0.5f;
+    private float lockTimer = 0f;
+
     bool IsMoveActive = true;
+    bool IsHoldActive = true;
 
     private void Awake()
     {
         activeBlock = GetComponent<Block>();
+
+        HoldingBlock.tetromino = Tetromino.nullTetromino;
+        temphold.tetromino = Tetromino.nullTetromino;
 
         for (int i = 0; i < tetrominoes.Length; ++i) 
         {
@@ -58,6 +68,7 @@ public class Board : MonoBehaviour
         }
 
         BlockRotation();
+        BlockHold();
 
         if (Time.time > nextTime)
         {
@@ -71,16 +82,41 @@ public class Board : MonoBehaviour
             Render(activeBlock);
         }
 
+        bool isOnGround = false;
         for (int i = 0; i < activeBlock.cells.Length; ++i)
         {
             Vector3Int newPos = activeBlock.cells[i] + activeBlock.pos + Vector3Int.down;
             if (newPos.y < groundYpos || InactiveTilemap.GetTile(newPos) != null)
             {
+                isOnGround = true;
+                break;
+            }
+        }
+
+        // 타이머 작동
+        if (isOnGround)
+        {
+            if (!isTouchingGround)
+            {
+                isTouchingGround = true;
+                lockTimer = 0f;
+            }
+
+            lockTimer += Time.deltaTime;
+
+            if (lockTimer >= lockDelay)
+            {
                 DeleteBlock(activeBlock);
                 RenderInactive(activeBlock);
                 SpawnBlock();
+                isTouchingGround = false;
             }
         }
+        else
+        {
+            isTouchingGround = false;
+        }
+
     }
 
     // 랜덤한 블럭을 생성
@@ -110,6 +146,8 @@ public class Board : MonoBehaviour
             Vector3Int tilePos = _block.cells[i] + _block.pos;
             InactiveTilemap.SetTile(tilePos, _block.data.tile);
         }
+
+        IsHoldActive = true;
     }
 
     // delete tiles in blockpos
@@ -239,6 +277,7 @@ public class Board : MonoBehaviour
             if (CanMove(activeBlock, Vector3Int.down))
             {
                 activeBlock.Fall();
+                lockTimer = 0f;
             }
             Render(activeBlock);
         }
@@ -249,6 +288,7 @@ public class Board : MonoBehaviour
             if (CanMove(activeBlock, Vector3Int.right))
             {
                 activeBlock.GoRight();
+                lockTimer = 0f;
             }
             Render(activeBlock);
         }
@@ -259,6 +299,7 @@ public class Board : MonoBehaviour
             if (CanMove(activeBlock, Vector3Int.left))
             {
                 activeBlock.GoLeft();
+                lockTimer = 0f;
             }
             Render(activeBlock);
         }
@@ -274,6 +315,7 @@ public class Board : MonoBehaviour
             if (CanRot(activeBlock))
             {
                 activeBlock.Rotate();
+                lockTimer = 0f;
             }
             else
             {
@@ -315,6 +357,29 @@ public class Board : MonoBehaviour
                 }
             }
             Render(activeBlock);
+        }
+    }
+
+    private void BlockHold()
+    {
+        if (Input.GetKeyDown(KeyCode.C) && IsHoldActive)
+        {
+            if (HoldingBlock.tetromino == Tetromino.nullTetromino)
+            {
+                HoldingBlock = activeBlock.data;
+                DeleteBlock(activeBlock);
+                SpawnBlock();
+            }
+            else
+            {
+                DeleteBlock(activeBlock);
+                temphold = activeBlock.data;
+                activeBlock.Initialize(HoldingBlock, spawnPos);
+                HoldingBlock = temphold;
+                Render(activeBlock);
+            }
+
+            IsHoldActive = false;
         }
     }
 }
