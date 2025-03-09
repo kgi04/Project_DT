@@ -51,6 +51,8 @@ public class Board : MonoBehaviour
     {
         CompleteRow();
 
+        // 키보드를 입력해 블럭을 이동
+        // 누른 후 movetimer를 걸어 일정 시간이 지나면 다시 누를 수 있게 함
         if (!IsMoveActive)
         {
             movetimer += Time.deltaTime;
@@ -70,6 +72,7 @@ public class Board : MonoBehaviour
         BlockRotation();
         BlockHold();
 
+        // 일정 시간이 지나면 블럭을 한 칸 아래로 이동
         if (Time.time > nextTime)
         {
             nextTime = Time.time + pointTime;
@@ -82,6 +85,7 @@ public class Board : MonoBehaviour
             Render(activeBlock);
         }
 
+        // 블럭의 아래쪽에 땅이나 다른 블럭이 있는 지 확인
         bool isOnGround = false;
         for (int i = 0; i < activeBlock.cells.Length; ++i)
         {
@@ -94,6 +98,7 @@ public class Board : MonoBehaviour
         }
 
         // 타이머 작동
+        // 블럭의 아래쪽에 땅이나 다른 블럭이 있을 때만 lockTimer가 증가
         if (isOnGround)
         {
             if (!isTouchingGround)
@@ -129,7 +134,7 @@ public class Board : MonoBehaviour
         Render(activeBlock);
     }
 
-    // 블럭을 board에 렌더링 (in inactivetilemap)
+    // 블럭을 board에 렌더링 (in activetilemap)
     public void Render(Block _block)
     {
         for (int i = 0; i < _block.cells.Length; ++i)
@@ -139,6 +144,7 @@ public class Board : MonoBehaviour
         }
     }
 
+    // 블럭을 board에 렌더링 (in inactivetilemap)
     public void RenderInactive(Block _block)
     {
         for (int i = 0; i < _block.cells.Length; ++i)
@@ -150,7 +156,7 @@ public class Board : MonoBehaviour
         IsHoldActive = true;
     }
 
-    // delete tiles in blockpos
+    // delete tiles in blockpos(block 자체가 사라지는 게 아님)
     public void DeleteBlock(Block _block)
     {
         for (int i = 0; i < _block.cells.Length; ++i)
@@ -269,6 +275,8 @@ public class Board : MonoBehaviour
         }
     }
 
+    // 키보드 입력에 따라 블럭을 이동
+    // 블럭을 이동했다면 lockTimer를 초기화
     private void KeyMove()
     {
         if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.Return))
@@ -307,6 +315,8 @@ public class Board : MonoBehaviour
 
     // makes block rotate
     // 아직 I블럭은 회전이 제대로 되지 않음
+    // 블럭이 회전할 수 있다면 회전 후 lockTimer를 초기화
+    // 블럭이 회전할 수 없다면 왼쪽, 오른쪽, 위로 이동할 수 있는지 확인, 이동한 후 회전
     private void BlockRotation()
     {
         if (Input.GetKeyDown(KeyCode.UpArrow))
@@ -360,6 +370,9 @@ public class Board : MonoBehaviour
         }
     }
 
+    // HoldingBlock이 없다면 HoldingBlock에 현재 블럭을 넣고 새로운 블럭을 생성
+    // HoldingBlock이 있다면 현재 블럭과 HoldingBlock을 교체
+    // Hold를 사용하면 다음 블럭을 놓을 때까지 Hold를 사용할 수 없음
     private void BlockHold()
     {
         if (Input.GetKeyDown(KeyCode.C) && IsHoldActive)
