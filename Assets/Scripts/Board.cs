@@ -203,6 +203,11 @@ public class Board : MonoBehaviour
         for (int x = leftEnd; x <= rightEnd; ++x)
         {
             Vector3Int pos = new Vector3Int(x, _y, 0);
+
+            if (InactiveTilemap.GetTile(pos) != null)
+            {
+                ScoreManager.score += 1;
+            }
             InactiveTilemap.SetTile(pos, null);
         }
     }
