@@ -444,6 +444,7 @@
 "Assets/Scripts/BlockData.cs"
 "Assets/Scripts/Board.cs"
 "Assets/Scripts/GameManager.cs"
+"Assets/Scripts/Ghost.cs"
 "Assets/Scripts/MainMenu.cs"
 "Assets/Scripts/ScoreManager.cs"
 "Assets/Scripts/ScoreUpdate.cs"

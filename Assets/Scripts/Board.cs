@@ -122,6 +122,7 @@ public class Board : MonoBehaviour
             isTouchingGround = false;
         }
 
+        KeyPut();
     }
 
     // 랜덤한 블럭을 생성
@@ -167,7 +168,7 @@ public class Board : MonoBehaviour
     }
 
     // check if block can move to some direction
-    private bool CanMove(Block _block, Vector3Int _direction)
+    public bool CanMove(Block _block, Vector3Int _direction)
     {
         for (int i = 0; i < _block.cells.Length; ++i)
         {
@@ -393,6 +394,24 @@ public class Board : MonoBehaviour
             }
 
             IsHoldActive = false;
+        }
+    }
+
+    // space바를 입력 시 블럭을 더 내려갈 수 없을 때까지 내리고
+    // inactivetilmap에 렌더링 후 새로운 블럭을 생성
+    private void KeyPut()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            DeleteBlock(activeBlock);
+
+            while (CanMove(activeBlock, Vector3Int.down))
+            {
+                activeBlock.Fall();
+            }
+
+            RenderInactive(activeBlock);
+            SpawnBlock();
         }
     }
 }
