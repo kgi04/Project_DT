@@ -1,25 +1,65 @@
 using UnityEngine;
+using UnityEngine.Rendering.Universal.Internal;
 using UnityEngine.Tilemaps;
 
-public class Ghost : Block
+public class Ghost : MonoBehaviour
 {
     public Tile GhostTile;
+    public Tilemap Tilemap;
+    public Block trackingBlock;
+    public Tilemap trackingTilemap;
 
-    public override void Initialize(TetrominoData _data, Vector3Int _pos)
+    public Vector3Int[] gcell { get; private set; }
+    public Vector3Int gpos { get; private set; }
+
+    int groundYpos = -10;
+
+    private void LateUpdate()
     {
-        data = _data;
-        pos = _pos;
+        Clear();
+        Copy();
+        Drop();
+        Render();
+    }
 
-        _data.tile = GhostTile;
+    private void Clear()
+    {
+        Tilemap.ClearAllTiles();
+    }
 
-        if (cells == null)
+    private void Copy()
+    {
+        gcell = trackingBlock.cells;
+        gpos = trackingBlock.pos;
+    }
+
+    private void Drop()
+    {
+        while (CanDrop())
         {
-            cells = new Vector3Int[_data.cells.Length];
+            gpos += Vector3Int.down;
         }
+    }
 
-        for (int i = 0; i < _data.cells.Length; ++i)
+    private void Render()
+    {
+        for (int i = 0; i < gcell.Length; ++i)
         {
-            cells[i] = (Vector3Int)_data.cells[i];
+            Tilemap.SetTile(gpos + gcell[i], GhostTile);
         }
+    }
+
+    private bool CanDrop()
+    {
+        for (int i = 0; i < gcell.Length; ++i)
+        {
+            Vector3Int cell = gcell[i];
+            Vector3Int next = gpos + cell + Vector3Int.down;
+            if (trackingTilemap.HasTile(next) || next.y < groundYpos)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 }

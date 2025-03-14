@@ -131,7 +131,7 @@ GameObject:
   - component: {fileID: 91049434}
   - component: {fileID: 91049433}
   m_Layer: 0
-  m_Name: Tilemap
+  m_Name: GhostTilemap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1223,10 +1223,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed45603fcdcf53d44a0f78e70c2dd2c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Board: {fileID: 1764731619}
   GhostTile: {fileID: 11400000, guid: 8b7f236b234faa843ae44ec1f81b3246, type: 2}
-  TrackingBlock: {fileID: 1764731620}
-  GhostTilemap: {fileID: 91049434}
+  Tilemap: {fileID: 91049434}
+  trackingBlock: {fileID: 1764731620}
+  trackingTilemap: {fileID: 1713765509}
 --- !u!156049354 &2139428029
 Grid:
   m_ObjectHideFlags: 0
