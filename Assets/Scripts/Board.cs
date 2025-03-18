@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 using static Unity.Collections.AllocatorManager;
 
@@ -15,6 +16,7 @@ public class Board : MonoBehaviour
 
     float pointTime = 1.0f;
     float nextTime = 0.0f;
+    int pointScore = 100;
     float moveintervalTime = 0.1f;
     float movetimer = 0.0f;
 
@@ -49,6 +51,14 @@ public class Board : MonoBehaviour
 
     private void Update()
     {
+        PressESC();
+
+        // 게임이 일시정지 상태라면 PressESC() 함수만 실행
+        if (GameManager.instance.IsGamePaused)
+        {
+            return;
+        }
+
         CompleteRow();
 
         // 키보드를 입력해 블럭을 이동
@@ -83,6 +93,13 @@ public class Board : MonoBehaviour
                 activeBlock.Fall();
             }
             Render(activeBlock);
+        }
+
+        // 점수가 일정 점수 이상이 되면 블럭이 떨어지는 속도를 빠르게 함
+        if (GameManager.instance.score >= pointScore)
+        {
+            pointScore += 100;
+            pointTime -= 0.2f;
         }
 
         // 블럭의 아래쪽에 땅이나 다른 블럭이 있는 지 확인
@@ -123,6 +140,12 @@ public class Board : MonoBehaviour
         }
 
         KeyPut();
+
+        // 블럭이 spawnPos보다 위로 올라가면 게임오버
+        if (InactiveTilemap.HasTile(spawnPos))
+        {
+            SceneManager.LoadScene("GameOver");
+        }
     }
 
     // 랜덤한 블럭을 생성
@@ -251,7 +274,7 @@ public class Board : MonoBehaviour
 
             if (InactiveTilemap.GetTile(pos) != null)
             {
-                ScoreManager.score += 1;
+                GameManager.instance.score += 1;
             }
             InactiveTilemap.SetTile(pos, null);
         }
@@ -412,6 +435,21 @@ public class Board : MonoBehaviour
 
             RenderInactive(activeBlock);
             SpawnBlock();
+        }
+    }
+
+    private void PressESC()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (GameManager.instance.IsGamePaused)
+            {
+                GameManager.instance.ResumeGame();
+            }
+            else
+            {
+                GameManager.instance.PauseGame();
+            }
         }
     }
 }

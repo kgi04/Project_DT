@@ -22,17 +22,20 @@ public class Ghost : MonoBehaviour
         Render();
     }
 
+    // clears the ghost tilemap to make it ready for the next frame
     private void Clear()
     {
         Tilemap.ClearAllTiles();
     }
 
+    // copies the tracking block's cells and position
     private void Copy()
     {
         gcell = trackingBlock.cells;
         gpos = trackingBlock.pos;
     }
 
+    // drops the ghost block to the ground
     private void Drop()
     {
         while (CanDrop())
@@ -41,6 +44,7 @@ public class Ghost : MonoBehaviour
         }
     }
 
+    // renders the ghost block
     private void Render()
     {
         for (int i = 0; i < gcell.Length; ++i)
@@ -49,6 +53,7 @@ public class Ghost : MonoBehaviour
         }
     }
 
+    // checks if the tiles under the ghost block is empty
     private bool CanDrop()
     {
         for (int i = 0; i < gcell.Length; ++i)

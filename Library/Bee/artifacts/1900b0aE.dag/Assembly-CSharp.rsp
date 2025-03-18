@@ -443,10 +443,9 @@
 "Assets/Scripts/Block.cs"
 "Assets/Scripts/BlockData.cs"
 "Assets/Scripts/Board.cs"
+"Assets/Scripts/ChangeScene.cs"
 "Assets/Scripts/GameManager.cs"
 "Assets/Scripts/Ghost.cs"
-"Assets/Scripts/MainMenu.cs"
-"Assets/Scripts/ScoreManager.cs"
 "Assets/Scripts/ScoreUpdate.cs"
 "Assets/Scripts/TetrominoData.cs"
 -langversion:9.0
