@@ -3,6 +3,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 using static Unity.Collections.AllocatorManager;
+using static UnityEditor.PlayerSettings;
+using static UnityEngine.GridBrushBase;
 
 public class Board : MonoBehaviour
 {
@@ -346,51 +348,62 @@ public class Board : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
             DeleteBlock(activeBlock);
-            if (CanRot(activeBlock))
+            if (CanWallKicks(activeBlock.rotationIndex, rotationDirection.Clockwise))
             {
-                activeBlock.Rotate();
-                lockTimer = 0f;
-            }
-            else
-            {
-                if (CanMove(activeBlock, Vector3Int.left))
-                {
-                    activeBlock.GoLeft();
-                    if (CanRot(activeBlock))
-                    {
-                        activeBlock.Rotate();
-                    }
-                    else
-                    {
-                        activeBlock.GoRight();
-                    }
-                }
-                else if (CanMove(activeBlock, Vector3Int.right))
-                {
-                    activeBlock.GoRight();
-                    if (CanRot(activeBlock))
-                    {
-                        activeBlock.Rotate();
-                    }
-                    else
-                    {
-                        activeBlock.GoLeft();
-                    }
-                }
-                else if (CanMove(activeBlock, Vector3Int.up))
-                {
-                    activeBlock.Rise();
-                    if (CanRot(activeBlock))
-                    {
-                        activeBlock.Rotate();
-                    }
-                    else
-                    {
-                        activeBlock.Fall();
-                    }
-                }
+                WallKicks(activeBlock.rotationIndex, rotationDirection.Clockwise);
             }
             Render(activeBlock);
+        }
+    }
+
+    private bool CanWallKicks(int _rotationIndex, rotationDirection _rotationDirection)
+    {
+        int wallKickIndex = activeBlock.GetWallKickIndex(_rotationIndex, _rotationDirection);
+
+        for (int i = 0; i < activeBlock.data.wallkicks.GetLength(1); ++i)
+        {
+            Vector3Int translation = (Vector3Int) activeBlock.data.wallkicks[wallKickIndex, i];
+            Vector3Int newPos = activeBlock.pos + translation;
+            Vector3Int originalPos = activeBlock.pos;
+            if (CanMove(activeBlock, translation))
+            {
+                activeBlock.Move(newPos);
+                if (CanRot(activeBlock))
+                {
+                    return true;
+                }
+                else
+                {
+                    activeBlock.Move(originalPos);
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private void WallKicks(int _rotationIndex, rotationDirection _rotationDirection)
+    {
+        int wallKickIndex = activeBlock.GetWallKickIndex(_rotationIndex, _rotationDirection);
+
+        for (int i = 0; i < activeBlock.data.wallkicks.GetLength(1); ++i)
+        {
+            Vector3Int translation = (Vector3Int) activeBlock.data.wallkicks[wallKickIndex, i];
+            Vector3Int newPos = activeBlock.pos + translation;
+            Vector3Int originalPos = activeBlock.pos;
+            if (CanMove(activeBlock, translation))
+            {
+                activeBlock.Move(newPos);
+                if (CanRot(activeBlock))
+                {
+                    activeBlock.Rotate();
+                    break;
+                }
+                else
+                {
+                    activeBlock.Move(originalPos);
+                }
+            }
         }
     }
 

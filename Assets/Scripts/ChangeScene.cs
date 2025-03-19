@@ -21,7 +21,7 @@ public class ChangeScene : MonoBehaviour
                 UnityEditor.EditorApplication.isPlaying = false;
                 break;
             case "RetryButton":
-                SceneManager.LoadScene("GameScene", LoadSceneMode.Single);
+                SceneManager.LoadScene("GameScene");
                 break;
             case "ResumeButton":
                 GameManager.instance.ResumeGame();
